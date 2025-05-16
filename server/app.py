@@ -1,7 +1,6 @@
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 from datetime import datetime
-from db_init import db_init
 
 import psycopg2
 import os
@@ -9,7 +8,7 @@ import os
 DATABASE_URL = os.environ.get("DATABASE_URL", "postgresql://postgres:password@localhost:5432/postgres")
 
 app = Flask(__name__)
-db_init()
+
 CORS(app, origins=["http://localhost:3000"])  # allow Next.js
 # In-memory store
 pi_status = {}
