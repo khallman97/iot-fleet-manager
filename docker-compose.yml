@@ -1,0 +1,71 @@
+version: '3.8'
+
+services:
+  # HIDING FOR NOW, SIMPLE TO DO WITHOUT DOCKER FOR FRONTEND
+  # frontend:
+  #   build:
+  #     context: ./frontend
+  #     dockerfile: Dockerfile
+  #   volumes:
+  #     - ./frontend:/app  # Mount code into container
+  #     - /app/node_modules # Avoid overwriting node_modules from host
+  #   ports:
+  #     - "3000:3000"
+  #   command: ["npm", "run", "dev"]  # Start Next.js dev server with hot reload
+  #   environment:
+  #     - NODE_ENV=development
+
+  server:
+    build: ./server
+    ports:
+        - "8000:8000"
+    environment:
+      - DATABASE_URL=postgresql://postgres:password@timescaledb:5432/postgres
+    depends_on:
+      - timescaledb
+
+  pi1:
+    build: ./agent
+    environment:
+      - PI_HOSTNAME=sim-pi-1
+      - SERVER_URL=http://server:8000/api
+      - TOKEN=TOKEN_PI_1
+      - INTERVAL=10
+    tty: true
+    stdin_open: true
+
+  pi2:
+    build: ./agent
+    environment:
+      - PI_HOSTNAME=sim-pi-2
+      - SERVER_URL=http://server:8000/api
+      - TOKEN=TOKEN_PI_2
+      - INTERVAL=15
+    tty: true
+    stdin_open: true
+
+  pi3:
+    build: ./agent
+    environment:
+      - PI_HOSTNAME=sim-pi-3
+      - SERVER_URL=http://server:8000/api
+      - TOKEN=TOKEN_PI_3
+      - INTERVAL=20
+    tty: true
+    stdin_open: true
+
+  timescaledb:
+    image: timescale/timescaledb:latest-pg14
+    container_name: timescaledb
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: postgres
+    ports:
+      - "5432:5432"
+    volumes:
+      - timescale-data:/var/lib/postgresql/data
+    restart: unless-stopped
+
+volumes:
+  timescale-data:
