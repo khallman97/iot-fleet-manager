@@ -3,3 +3,5 @@ flask
 flask-cors
 psycopg2-binary
 sqlalchemy
+flask-marshmallow
+marshmallow

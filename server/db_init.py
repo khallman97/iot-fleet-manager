@@ -54,6 +54,20 @@ def init_db():
     );
     """)
 
+    # Generte wg_key storage table
+    run_sql("""
+        CREATE TABLE IF NOT EXISTS pi_wireguard_keys (
+        id SERIAL PRIMARY KEY,
+        hostname TEXT UNIQUE NOT NULL,
+        wg_ip INET NOT NULL,                        
+        public_key TEXT NOT NULL,                   
+        private_key BYTEA NOT NULL,                  
+        server_public_key TEXT NOT NULL,           
+        server_endpoint TEXT NOT NULL,               
+        created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+    );
+    """)
+
     # Create hypertable if not exists
     run_sql("""
     SELECT create_hypertable('pi_metrics', 'time', if_not_exists => TRUE);
